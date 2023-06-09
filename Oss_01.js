@@ -28,6 +28,7 @@ let crudQuestion = function ()
     }
     else if(userInput == "종료" || userInput == 9)
     {
+      console.log("종료됩니다.");
       return rl.close();
     }
 
@@ -42,13 +43,12 @@ let crudQuestion = function ()
 
 let createNumber = function ()  //번호 추가
 {
-  rl.question('추가할 전화번호를 입력해주세요. \n', function (userInput) 
+  rl.question('추가할 전화번호를 입력해주세요. \n메뉴로 돌아가시려면 \'종료\'를 입력해주세요.\n', function (userInput) 
   {
     if (userInput == "종료")
     {
       //console.log("0번 째 번호: ", addNumber[0]);
-      
-      return rl.close();
+      return crudQuestion();
     }
 
     if (i > 9)
@@ -134,7 +134,7 @@ let updateNumber = function()  //번호 수정
           {
             addNumber[arrNum] = userInput;
             console.log(arrNum, "번째 번호를 ", addNumber[arrNum], "로 수정했습니다. \n");
-            console.log("현재 번호 정보: ", addNumber);
+            console.log("현재 번호 정보: ", addNumber[arrNum]);
 
             crudQuestion();
 
