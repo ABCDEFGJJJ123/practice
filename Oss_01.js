@@ -1,7 +1,23 @@
 let addNumber = new Array(10);            //전화번호 저장 용량
-let i = 0;
+var i = 0;
 let arrNum = 0;                      //update
 let arrNum2 = 0;                           //delete
+
+const page = Array(10);
+
+let fir = -1;
+let sec = -1;
+let p = 1;
+
+for (var i =0; i < 10; i++){
+  page[i] = new Array(11);
+  page[i][0] = 0;
+  for (var j = 0; j < 10; j++) {
+    page[i][j+1] = new Array(2);
+    page[i][j+1][0] = 0;
+  }
+}
+page[0][0] = 1;
 
 let readline = require('readline');
 
@@ -17,6 +33,10 @@ let crudQuestion = function ()
     if (userInput == 1)
     {
       createNumber();
+    }
+    else if(userInput == 2)
+    {
+      readNumber(p)
     }
     else if(userInput == 3)
     {
@@ -41,40 +61,59 @@ let crudQuestion = function ()
   });
 };
 
-let createNumber = function ()  //번호 추가
-{
-  rl.question('추가할 전화번호를 입력해주세요. \n메뉴로 돌아가시려면 \'종료\'를 입력해주세요.\n', function (userInput) 
-  {
-    if (userInput == "종료")
-    {
-      //console.log("0번 째 번호: ", addNumber[0]);
+let createNumber = function () {
+  if (page[9][10][1] == 0){  //가득 찼을때 나오는 문구.
+    console.log("저장공간이 꽉 찼습니다. 추가로 저장하시려면 기존 전화번호를 삭제해야됩니다.");
+    rl.question("삭제하시겠습니까?\n 삭제를 원하시면 '네' 원하지 않으면 '아니요'를 입력해주세요.\n", function (full) {
+      if (full == '네'){
+        return delNumber();
+      }else if(full == '아니요'){
+        console.log('메뉴로 돌아갑니다.');
+        return crudQuestion();
+      }
+    });
+  }
+  let end = 0;
+  rl.question('추가할 전화번호를 입력해주세요. \n메뉴로 돌아가시려면 \'종료\'를 입력해주세요.\n', function (userInput) {
+    if (userInput == '종료') {
       return crudQuestion();
+    }else{
+      if (page[0][1][0] == 0) { // 첫 페이지 첫번째 내용의 여부가 0 이면 1로 만들어줌.
+        page[0][1][0] = 1;
+        fir = 0;
+        sec = 1;
+      }else{
+          for (var i = 10; i > 0; i--){
+            if (page[i-1][0] == 1) {
+              for (var j = 11; j > 1; j--){
+                if (page[i-1][j-1][0] == 1){
+                  fir = i-1;
+                  sec = j;
+                  if (sec > 10){
+                    sec = 1;
+                    fir += 1;
+                    page[fir][0] = 1;
+                  }
+                  end = 1;
+                  break;
+                  }
+                }
+              }if (end == 1){
+                break;
+              }
+          }
+      }
+      if (fir != -1){
+        page[fir][sec][1] = String(userInput);
+        page[fir][sec][0] = 1;
+        console.log(userInput, '이(가) ',fir+1,'페이지 ', sec,'번째에 추가되었습니다.');
+      }else{
+        console.log('ERROR');
+      }
+      return createNumber();
     }
-
-    if (i > 9)
-    {
-      
-      console.log(i, "번째 번호", addNumber[i]);
-      
-      console.log("저장공간이 꽉 찼습니다. 추가로 저장하시려면 기존 전화번호를 삭제해야됩니다.");
-      console.log("삭제하시겠습니까?\n 삭제를 원하시면 '네' 원하지 않으면 '아니요'를 입력해주세요.");
-      delNumber();
-
-      //return rl.close();
-    }
-    
-    if (i < 10)
-    {
-    console.log(i, " 번째에 ", userInput, '를(을) 추가했습니다.\n');
-    addNumber[i] = userInput;
-    console.log("추가한 번호: ", addNumber[i]);
-    i++;
-    createNumber();
-    }
-    
-    //i++;    
-  });
-};
+  })
+}
 
 let updateNumber = function()  //번호 수정
 {
@@ -232,6 +271,50 @@ let crtNum = function()
 
     crudQuestion();
   });
+}
+
+let readNumber = function(p){
+  console.log('[',p,'페이지.]');
+  for (var i = 1; i<11; i++){
+    if (page[p-1][i][0] == 1){
+      console.log(i, page[p-1][i][1]);
+    }else if (page[p-1][i][0] == 0)console.log(i, '내용이 없습니다.');
+  }
+  rl.question('이전 페이지 : 1\n다음 페이지 : 2\n메뉴로 돌아가기 : 3\n', function(userInput){
+    if (userInput == 1){
+      if (p <= 1) {
+        console.log('이전 페이지가 없습니다.');
+        return readNumber(p);
+      }else {
+        p -= 1;
+        console.log('[',p,'페이지.]');
+        for (var i = 1; i<11; i++){
+          if (page[p-1][i][0] == 1){
+            console.log(i, page[p-1][i][1]);
+          }else if (page[p-1][i][0] == 0)console.log(i, '내용이 없습니다.');
+        }
+        return readNumber(p);
+    }
+    }else if(userInput == 2){
+      if (p >= 10) {
+        console.log('다음 페이지가 없습니다.');
+        return readNumber(p);
+      }else {
+        p += 1;
+        console.log('[',p,'페이지.]');
+        for (var i = 1; i<11; i++){
+          if (page[p-1][i][0] == 1){
+            console.log(i, page[p-1][i][1]);
+          }else if (page[p-1][i][0] == 0)console.log(i, '내용이 없습니다.');
+        }
+        return readNumber(p);
+      }
+    }else if (userInput == '3'){
+      return crudQuestion();
+    }else {
+      console.log('다시입력해주세요.');
+    }
+  })
 }
 
 crudQuestion();
