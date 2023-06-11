@@ -1,4 +1,3 @@
-let addNumber = new Array(10);            //전화번호 저장 용량
 var i = 0;
 let arrNum = 0;                      //update
 let arrNum2 = 0;                           //delete
@@ -7,8 +6,12 @@ const page = Array(10);
 
 let fir = -1;
 let sec = -1;
-let p = 1;
+let p = 1;    //현재 페이지
 
+let dFir = 0;
+let dSec = 0;
+
+// 3차원 배열 페이지[(내용의 존재여부, 목록[내용의 존재 여부, 내용])*10)*10]
 for (var i =0; i < 10; i++){
   page[i] = new Array(11);
   page[i][0] = 0;
@@ -28,7 +31,7 @@ let rl = readline.createInterface({
 
 let crudQuestion = function () 
 {
-  rl.question('다음 중 고르시오.\n 1. 번호 추가, 2.번호 검색, 3. 번호 수정, 4. 번호 삭제, 9.종료 \n', function (userInput) 
+  rl.question('다음 중 고르시오.\n 1. 번호 추가, 2.번호 검색, 9.종료 \n', function (userInput) 
   {
     if (userInput == 1)
     {
@@ -36,15 +39,7 @@ let crudQuestion = function ()
     }
     else if(userInput == 2)
     {
-      readNumber(p)
-    }
-    else if(userInput == 3)
-    {
-      updateNumber();
-    }
-    else if (userInput == 4)
-    {
-      delNumber();
+      readNumber(p);
     }
     else if(userInput == "종료" || userInput == 9)
     {
@@ -115,141 +110,81 @@ let createNumber = function () {
   })
 }
 
-let updateNumber = function()  //번호 수정
-{
-  console.log("번호를 수정하시겠습니까? '네' 혹은 '아니요'를 입력해주세요. ");
-
-  rl.question("", function(userInput)
-  {
-
-    if (userInput == '네')
+let updateNumber = function(p){  //번호 수정
+  rl.question("몇 번째 번호를 수정하시겠습니까?", function(userInput){
+    if (userInput > 10 || userInput < 0){   //잘못된 입력값
+      console.log("다시 입력해주세요.\  n");
+      updateNumber(p);
+    }else if (page[p-1][userInput][0] == 0) // p페이지의 userInput번째의 내용의 존재여부 확인.
     {
-
-      rl.question("몇 번째 번호를 수정하시겠습니까?", function(userInput)
-      {
-
-        if (userInput >= addNumber.length || userInput < 0)
-        {
-
-          console.log("다시 입력해주세요.\n");
-          updateNumber();
-        }
-
-        else if (!(userInput >= addNumber.length || userInput < 0) && (addNumber[userInput] == undefined))
-          {
-            //arrNum = userInput;
-            console.log("현재 ", userInput, "번 째에는 저장된 번호가 없습니다. 번호를 추가하시겠습니까? '네' 혹은 '아니요'를 입력해주세요.\n");
-
-            rl.question("", function(userInput)
-            {
-
-              if (userInput == '네')
-              {
-                crtNum();
-              }
-
-              else if (userInput == '아니요')
-              {
-                crudQuestion();
-              }
-
-              else{
-                console.log("다시 입력해주세요.");
-                updateNumber();
-              }
-
-            });
-
-          }
-
-        else if (!(userInput >= addNumber.length || userInput < 0))
-        {
-          arrNum = userInput;
-          console.log("arrNum: ", arrNum);
-
-          addNumber.splice(userInput, 1, undefined);
-
-          rl.question("기존 번호가 삭제되었습니다. 새 전화번호를 입력해주세요.\n", function(userInput)
-          {
-            addNumber[arrNum] = userInput;
-            console.log(arrNum, "번째 번호를 ", addNumber[arrNum], "로 수정했습니다. \n");
-            console.log("현재 번호 정보: ", addNumber[arrNum]);
-
-            crudQuestion();
-
-          });
-          
-          
-        }
-
-        
-      });
-
-    }
-
-    else if(userInput == '아니요')
-    {
-      crudQuestion();
-    }
-
-    else{
-      console.log("다시 입력해주세요.");
-      updateNumber();
-    }
-
-  });
-
-};
-
-
-
-
-let delNumber = function() //번호 삭제
-{
-  console.log("정말 삭제하기를 원하십니까? '네' 혹은 '아니요'를 입력해주세요. ");
-
-  rl.question("", function(userInput)
-  {
-    if (userInput == "네")
-    {
-      rl.question("삭제한 자리에 새 번호를 추가하시겠습니까? '네' 혹은 '아니요'를 입력해주세요.\n", function(userInput)
+      //arrNum = userInput;
+      rl.question("현재 ", userInput, "번 째에는 저장된 번호가 없습니다. 번호를 추가하시겠습니까? '네' 혹은 '아니요'를 입력해주세요.\n", function(userInput)
       {
         if (userInput == '네')
         {
-          rl.question("몇 번째 번호를 삭제하시겠습니까?\n", function(userInput)
-          {
-            if(userInput >= addNumber.length || userInput < 0)
-            {
-              console.log("다시 입력해주세요.");
-              delNumber();
-            }
-
-            else if (!(userInput >= addNumber.length || userInput < 0))
-            {
-              arrNum2 = userInput;
-              console.log(userInput, "번째 번호 : ", addNumber[userInput], "을(를) 삭제했습니다.");
-              addNumber.splice(userInput, 1, undefined);
-              crtNum();
-            }
-            
-          });
+          createNumber();
         }
-
-        else if(userInput == '아니요')
+        else if (userInput == '아니요') //번호 추가 여부
         {
-          crudQuestion();
+          readNumber(p);
         }
-
         else{
-          console.log("다시 입력해주세요.\n");
-          delNumber();
+          console.log("다시 입력해주세요.");
+          updateNumber(p);
         }
       });
-
     }
-    
+    else if (page[p-1][userInput][0] == 1)
+    {
+      arrNum = userInput;
+      console.log(userInput, '번째에는 ', page[p-1][userInput][1],"이(가) 존재합니다.");
+      rl.question("수정하려면 번호를 입력하세요.\n취소하려면 '종료'를 입력해주세요.\n", function(userInput)
+      {
+        if (userInput == '종료'){
+          return readNumber(p);
+        }else {
+          page[p-1][arrNum][1] = userInput;
+          console.log(arrNum, "번째 번호를 ", page[p-1][arrNum][1], "로 수정했습니다. \n");
 
-    else if (userInput == "아니요")
+          readNumber(p);
+        }
+
+      });
+      
+    }else {
+      console.log('잘못된 번호입니다.\n다시입력해 주세요.');
+      return updateNumber(p);
+    }
+  });
+}
+
+let delNumber = function(p) //번호 삭제
+{
+  rl.question("몇 번째 번호를 삭제하시겠습니까?\n", function(userInput)
+  {
+    if(userInput > 10 || userInput < 0)
+    {
+      console.log("다시 입력해주세요.");
+      delNumber(p);
+    }else if (page[p-1][userInput][0] == 0) {
+      console.log('내용이 존재하지 않습니다.\n다시입력해주세요.');
+      return readNumber(p);
+    }
+
+    else if (userInput <= 10 && userInput >= 1)
+    {
+      arrNum2 = userInput;
+      console.log(userInput, "번째 번호 : ", page[p-1][userInput][1], "을(를) 삭제했습니다.");
+      page[p-1][userInput][0] = 0;
+      page[p-1][userInput][1] = undefined;
+
+      dFir = p-1;
+      dSec = Number(userInput);
+      rearrange(dFir,dSec);
+      return readNumber(p);
+    }
+
+    else if (userInput == "아니요") //삭제여부
     {
       crudQuestion();
     }
@@ -261,18 +196,109 @@ let delNumber = function() //번호 삭제
   }); //dq = deleteQuestion
 };
 
-let crtNum = function()
-{
-  rl.question("추가할 번호를 입력해주세요.", function(userInput)
-  {
-    addNumber[arrNum2] = userInput;
-    console.log(arrNum2, "번째에 ", addNumber[arrNum2], "를 추가했습니다.");
-    console.log("현재 번호 정보: ", addNumber);
+let rearrange = function(dFir, dSec){       //재정렬 함수
+  let end = 0;
+  let eee = 0;
+  if (dSec < 10){
+    if (page[dFir][dSec+1][0] == 1){
+      while(end == 0){
+        while(dSec < 10 && page[dFir][dSec+1][0] == 1){
+          if (dSec < 10){
+            if (page[dFir][dSec+1][0] == 1){
+              page[dFir][dSec][1] = page[dFir][dSec+1][1];
+              page[dFir][dSec+1][1] = undefined;
+              page[dFir][dSec][0] = 1;
+              page[dFir][dSec+1][0] = 0;
+              dSec += 1;
+            }
+          }else if (page[dFir][dSec+1][0] == 0) {
+            end = 1;
+            break;
+          }
+        }
+        if (end == 1)break;
+        if (dSec >= 10){
+          if (page[dFir+1][1][0] == 1){
+            page[dFir][dSec][1] = page[dFir+1][1][1];
+            page[dFir+1][1][1] = undefined;
+            page[dFir][dSec][0] = 1;
+            page[dFir+1][1][0] = 0;
+            dFir += 1;
+            dSec = 1;
+          }else if (page[dFir+1][1][0] == 0) {
+            end = 1;
+            break
+          };
+        }
+        eee += 1;
+        if (eee == 10) {
+          console.log('ERROR');
+          break;
+        }
+      }
+    }
 
-    crudQuestion();
-  });
+  }else if(dSec = 10) {
+    if (dSec >= 10){
+      console.log('체크1');
+      if (page[dFir+1][1][0] == 1){
+        console.log('체크2');
+        page[dFir][dSec][1] = page[dFir+1][1][1];
+        page[dFir+1][1][1] = undefined;
+        page[dFir][dSec][0] = 1;
+        page[dFir+1][1][0] = 0;
+        dFir += 1;
+        dSec = 1;
+        console.log('체크3');
+      }else if (page[dFir+1][1][0] == 0) {
+        console.log('체크4');
+        end = 1;
+      };
+    }
+    if (dSec < 10){
+      if (page[dFir][dSec+1][0] == 1){
+        console.log('체크5');
+        while(end == 0){
+          while(dSec < 10 && page[dFir][dSec+1][0] == 1){
+            if (dSec < 10){
+              if (page[dFir][dSec+1][0] == 1){
+                page[dFir][dSec][1] = page[dFir][dSec+1][1];
+                page[dFir][dSec+1][1] = undefined;
+                page[dFir][dSec][0] = 1;
+                page[dFir][dSec+1][0] = 0;
+                dSec += 1;
+              }
+            }else if (page[dFir][dSec+1][0] == 0) {
+              end = 1;
+              break;
+            }
+          }
+          if (end == 1)break;
+          if (dSec >= 10){
+            if (page[dFir+1][1][0] == 1){
+              page[dFir][dSec][1] = page[dFir+1][1][1];
+              page[dFir+1][1][1] = undefined;
+              page[dFir][dSec][0] = 1;
+              page[dFir+1][1][0] = 0;
+              dFir += 1;
+              dSec = 1;
+            }else if (page[dFir+1][1][0] == 0) {
+              end = 1;
+              break
+            };
+          }
+          eee += 1;
+          if (eee == 10) {
+            console.log('ERROR');
+            break;
+          }
+        }
+      }
+    }
+
+  }
 }
-
+// 번호 검색 기능
 let readNumber = function(p){
   console.log('[',p,'페이지.]');
   for (var i = 1; i<11; i++){
@@ -280,7 +306,7 @@ let readNumber = function(p){
       console.log(i, page[p-1][i][1]);
     }else if (page[p-1][i][0] == 0)console.log(i, '내용이 없습니다.');
   }
-  rl.question('이전 페이지 : 1\n다음 페이지 : 2\n메뉴로 돌아가기 : 3\n', function(userInput){
+  rl.question('1. 이전 페이지\n2. 다음 페이지\n3. 번호 수정\n4. 번호 삭제\n5. 종료\n', function(userInput){
     if (userInput == 1){
       if (p <= 1) {
         console.log('이전 페이지가 없습니다.');
@@ -309,14 +335,18 @@ let readNumber = function(p){
         }
         return readNumber(p);
       }
-    }else if (userInput == '3'){
+    }else if (userInput == 3){
+      return updateNumber(p);
+    }else if (userInput == 4){
+      return delNumber(p);
+    }else if (userInput == 5) {
       return crudQuestion();
     }else {
       console.log('다시입력해주세요.');
+      readNumber(p);
     }
   })
 }
 
 crudQuestion();
 //createUserNumber();
-
