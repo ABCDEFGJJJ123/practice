@@ -118,7 +118,7 @@ let updateNumber = function(p){  //번호 수정
     }else if (page[p-1][userInput][0] == 0) // p페이지의 userInput번째의 내용의 존재여부 확인.
     {
       //arrNum = userInput;
-      rl.question("현재 ", userInput, "번 째에는 저장된 번호가 없습니다. 번호를 추가하시겠습니까? '네' 혹은 '아니요'를 입력해주세요.\n", function(userInput)
+      rl.question(`현재 ${userInput}번 째에는 저장된 번호가 없습니다. 번호를 추가하시겠습니까? '네' 혹은 '아니요'를 입력해주세요.\n`, function(userInput)
       {
         if (userInput == '네')
         {
